@@ -22,5 +22,32 @@
 
   <h1>Google 同意モードテストページ</h1>
   <!-- GA4用のコード、Tag Managerのスニペットなどを追記 -->
+
+<script>
+  // GA4 の gtag.js を読み込んでいる前提
+  // 例: gtag('js', new Date()); gtag('config', 'G-XXXXXXXX');
+
+  // 同意モードのステータスを取得
+  gtag('get', 'G-XXXXXXXX', 'consent', function(consentObj) {
+    console.log('Current Consent State:', consentObj);
+
+    // consentObj の例:
+    // {
+    //   ad_storage: 'denied' or 'granted',
+    //   analytics_storage: 'denied' or 'granted',
+    //   ...
+    // }
+
+    // ここで consentObj の値を判定し、同意モードが有効かどうかを判断
+    if (consentObj.analytics_storage === 'denied' || consentObj.ad_storage === 'denied') {
+      console.log('一部または全ての同意が拒否 (Consent Mode による制限が有効)');
+    } else {
+      console.log('すべてのストレージが許可 (Consent Mode による制限がないかも)');
+    }
+  });
+</script>
+
+  
+  
 </body>
 </html>
