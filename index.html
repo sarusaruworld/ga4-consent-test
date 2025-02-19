@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>同意モードテスト（複数種別）</title>
+  <title>同意モードテスト（複数種別 + カスタムキー）</title>
 
   <!-- ▼ ブリッジ用のスクリプトを先に定義 ▼ -->
   <script>
@@ -27,7 +27,6 @@
   <!-- ▲ End Google Tag Manager (HEAD部) ▲ -->
 
   <style>
-    /* ボタンを並べやすくするための簡易CSS */
     .consent-group {
       border: 1px solid #ccc;
       margin: 1em 0;
@@ -50,7 +49,7 @@
   </noscript>
   <!-- ▲ End Google Tag Manager (noscript) ▲ -->
 
-  <h1>Google 同意モード テストページ（複数種別）</h1>
+  <h1>Google 同意モード テストページ（複数種別 + カスタムキー）</h1>
   <p>以下のボタン操作で、各種別ごとに同意/拒否を切り替えます。</p>
 
   <!-- Analytics Storage -->
@@ -88,75 +87,89 @@
     <button id="secReject">拒否する</button>
   </div>
 
+  <!-- ad_user_data -->
+  <div class="consent-group">
+    <h2>ad_user_data</h2>
+    <button id="adUserDataAccept">同意する</button>
+    <button id="adUserDataReject">拒否する</button>
+  </div>
+
+  <!-- ad_personalization -->
+  <div class="consent-group">
+    <h2>ad_personalization</h2>
+    <button id="adPersAccept">同意する</button>
+    <button id="adPersReject">拒否する</button>
+  </div>
+
   <script>
     // ========== Analytics Storage ==========
     document.getElementById('analyticsAccept').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'analytics_storage': 'granted'
-      });
+      gtag('consent', 'update', { 'analytics_storage': 'granted' });
       console.log('[Consent Mode] analytics_storage = granted');
     });
     document.getElementById('analyticsReject').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'analytics_storage': 'denied'
-      });
+      gtag('consent', 'update', { 'analytics_storage': 'denied' });
       console.log('[Consent Mode] analytics_storage = denied');
     });
 
     // ========== Ad Storage ==========
     document.getElementById('adAccept').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'ad_storage': 'granted'
-      });
+      gtag('consent', 'update', { 'ad_storage': 'granted' });
       console.log('[Consent Mode] ad_storage = granted');
     });
     document.getElementById('adReject').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'ad_storage': 'denied'
-      });
+      gtag('consent', 'update', { 'ad_storage': 'denied' });
       console.log('[Consent Mode] ad_storage = denied');
     });
 
     // ========== Functionality Storage ==========
     document.getElementById('funcAccept').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'functionality_storage': 'granted'
-      });
+      gtag('consent', 'update', { 'functionality_storage': 'granted' });
       console.log('[Consent Mode] functionality_storage = granted');
     });
     document.getElementById('funcReject').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'functionality_storage': 'denied'
-      });
+      gtag('consent', 'update', { 'functionality_storage': 'denied' });
       console.log('[Consent Mode] functionality_storage = denied');
     });
 
     // ========== Personalization Storage ==========
     document.getElementById('persAccept').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'personalization_storage': 'granted'
-      });
+      gtag('consent', 'update', { 'personalization_storage': 'granted' });
       console.log('[Consent Mode] personalization_storage = granted');
     });
     document.getElementById('persReject').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'personalization_storage': 'denied'
-      });
+      gtag('consent', 'update', { 'personalization_storage': 'denied' });
       console.log('[Consent Mode] personalization_storage = denied');
     });
 
     // ========== Security Storage ==========
     document.getElementById('secAccept').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'security_storage': 'granted'
-      });
+      gtag('consent', 'update', { 'security_storage': 'granted' });
       console.log('[Consent Mode] security_storage = granted');
     });
     document.getElementById('secReject').addEventListener('click', function(){
-      gtag('consent', 'update', {
-        'security_storage': 'denied'
-      });
+      gtag('consent', 'update', { 'security_storage': 'denied' });
       console.log('[Consent Mode] security_storage = denied');
+    });
+
+    // ========== ad_user_data (カスタムキー) ==========
+    document.getElementById('adUserDataAccept').addEventListener('click', function(){
+      gtag('consent', 'update', { 'ad_user_data': 'granted' });
+      console.log('[Consent Mode] ad_user_data = granted');
+    });
+    document.getElementById('adUserDataReject').addEventListener('click', function(){
+      gtag('consent', 'update', { 'ad_user_data': 'denied' });
+      console.log('[Consent Mode] ad_user_data = denied');
+    });
+
+    // ========== ad_personalization (カスタムキー) ==========
+    document.getElementById('adPersAccept').addEventListener('click', function(){
+      gtag('consent', 'update', { 'ad_personalization': 'granted' });
+      console.log('[Consent Mode] ad_personalization = granted');
+    });
+    document.getElementById('adPersReject').addEventListener('click', function(){
+      gtag('consent', 'update', { 'ad_personalization': 'denied' });
+      console.log('[Consent Mode] ad_personalization = denied');
     });
   </script>
 </body>
