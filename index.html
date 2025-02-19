@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <title>同意モードテスト</title>
 
-  <!-- Google Tag Manager (HEAD部) -->
+  <!-- ▼ ブリッジ用のスクリプトを先に定義 ▼ -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+  </script>
+
+  <!-- ▼ Google Tag Manager (HEAD部) ▼ -->
   <script>
     (function(w,d,s,l,i){
       w[l]=w[l]||[];
@@ -16,16 +24,16 @@
       f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-W8J5HDXW');
   </script>
-  <!-- End Google Tag Manager (HEAD部) -->
+  <!-- ▲ End Google Tag Manager (HEAD部) ▲ -->
 
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
+  <!-- ▼ Google Tag Manager (noscript) ▼ -->
   <noscript>
     <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8J5HDXW"
             height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
-  <!-- End Google Tag Manager (noscript) -->
+  <!-- ▲ End Google Tag Manager (noscript) ▲ -->
 
   <h1>Google 同意モード テストページ</h1>
   <p>ボタン操作で「analytics_storage」の状態を切り替えます。</p>
@@ -36,21 +44,17 @@
   <button id="rejectConsent">拒否する</button>
 
   <script>
-    // ボタンクリックでConsent Modeを切り替える
+    // イベントリスナーで gtag('consent', 'update', ...) を呼び出す
     document.getElementById('acceptConsent').addEventListener('click', function(){
-      // analytics_storageを "granted" に設定
       gtag('consent', 'update', {
         'analytics_storage': 'granted'
-        // 'ad_storage': 'granted' など、必要に応じて追加可能
       });
       console.log('[Consent Mode] analytics_storage = granted');
     });
 
     document.getElementById('rejectConsent').addEventListener('click', function(){
-      // analytics_storageを "denied" に設定
       gtag('consent', 'update', {
         'analytics_storage': 'denied'
-        // 'ad_storage': 'denied' など、必要に応じて追加可能
       });
       console.log('[Consent Mode] analytics_storage = denied');
     });
