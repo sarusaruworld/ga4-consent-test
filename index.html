@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>同意モードテスト（記憶あり・読み込み時の再適用をコメントアウト）</title>
+  <title>同意モードテスト（記憶あり・ID修正）</title>
 
   <!-- ▼ ブリッジ用のスクリプトを先に定義 ▼ -->
   <script>
@@ -49,14 +49,15 @@
   </noscript>
   <!-- ▲ End Google Tag Manager (noscript) ▲ -->
 
-  <h1>Google 同意モード テストページ（記憶あり／再適用コメントアウト）</h1>
-  <p>ボタン操作で各種別の同意/拒否をlocalStorageに保存します。ただし、再読み込み時の gtag('consent', 'update') 呼び出しはコメントアウトしました。</p>
+  <h1>Google 同意モード テストページ（記憶あり・ID修正）</h1>
+  <p>ボタン操作で、各種別ごとに同意/拒否を切り替え＆localStorageに保存し、再読み込み時に復元します。</p>
 
   <!-- Analytics Storage -->
   <div class="consent-group">
     <h2>Analytics Storage</h2>
     <button id="analyticsAccept">同意する</button>
     <button id="analyticsReject">拒否する</button>
+    <!-- IDを "analytics_storageStatus" に修正 -->
     <p id="analytics_storageStatus">現在の設定: 未設定</p>
   </div>
 
@@ -65,6 +66,7 @@
     <h2>Ad Storage</h2>
     <button id="adAccept">同意する</button>
     <button id="adReject">拒否する</button>
+    <!-- IDを "ad_storageStatus" に修正 -->
     <p id="ad_storageStatus">現在の設定: 未設定</p>
   </div>
 
@@ -73,6 +75,7 @@
     <h2>Functionality Storage</h2>
     <button id="funcAccept">同意する</button>
     <button id="funcReject">拒否する</button>
+    <!-- IDを "functionality_storageStatus" に修正 -->
     <p id="functionality_storageStatus">現在の設定: 未設定</p>
   </div>
 
@@ -81,6 +84,7 @@
     <h2>Personalization Storage</h2>
     <button id="persAccept">同意する</button>
     <button id="persReject">拒否する</button>
+    <!-- IDを "personalization_storageStatus" に修正 -->
     <p id="personalization_storageStatus">現在の設定: 未設定</p>
   </div>
 
@@ -89,6 +93,7 @@
     <h2>Security Storage</h2>
     <button id="secAccept">同意する</button>
     <button id="secReject">拒否する</button>
+    <!-- IDを "security_storageStatus" に修正 -->
     <p id="security_storageStatus">現在の設定: 未設定</p>
   </div>
 
@@ -97,6 +102,7 @@
     <h2>ad_user_data</h2>
     <button id="adUserDataAccept">同意する</button>
     <button id="adUserDataReject">拒否する</button>
+    <!-- IDを "ad_user_dataStatus" に修正 -->
     <p id="ad_user_dataStatus">現在の設定: 未設定</p>
   </div>
 
@@ -105,6 +111,7 @@
     <h2>ad_personalization</h2>
     <button id="adPersAccept">同意する</button>
     <button id="adPersReject">拒否する</button>
+    <!-- IDを "ad_personalizationStatus" に修正 -->
     <p id="ad_personalizationStatus">現在の設定: 未設定</p>
   </div>
 
@@ -154,27 +161,28 @@
       });
     }
 
-    // ページ読み込み時にlocalStorageの状態を読み込んで「UI」にのみ反映
-    // gtag('consent', 'update', ...) 部分はコメントアウト
+    // ページ読み込み時にlocalStorageの状態を読み込んで適用
     window.addEventListener('DOMContentLoaded', () => {
       const consentData = loadConsentFromStorage();
       if (Object.keys(consentData).length > 0) {
-        // ▼ コメントアウト開始 ▼
-        // gtag('consent', 'update', consentData);
-        // console.log('[Consent Mode] Loaded from localStorage:', consentData);
-        // ▲ コメントアウト終了 ▲
+        gtag('consent', 'update', consentData);
+        console.log('[Consent Mode] Loaded from localStorage:', consentData);
       }
-      // UI更新のみ実施
+      // UI更新
       updateAllUI(consentData);
     });
 
     // 同意切り替え用の関数
     function setConsent(key, value) {
+      // 現在の設定を読み込み
       const consentData = loadConsentFromStorage();
+      // 値を更新
       consentData[key] = value;
+      // localStorage保存
       saveConsentToStorage(consentData);
-      // ここでは実際にConsent Modeに反映
+      // Consent Modeに反映
       gtag('consent', 'update', { [key]: value });
+      // UI更新
       updateStatusUI(key, value);
       console.log(`[Consent Mode] ${key} = ${value}`);
     }
