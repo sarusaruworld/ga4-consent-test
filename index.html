@@ -2,11 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>同意モードテスト（複数種別・汎用版）</title>
+  <title>同意モードテスト（複数種別+カスタム）</title>
 
   <!-- ▼ ブリッジ用のスクリプトを先に定義 ▼ -->
   <script>
-    // gtag() を定義して dataLayer に push するだけの軽量ブリッジ
     window.dataLayer = window.dataLayer || [];
     function gtag() {
       dataLayer.push(arguments);
@@ -28,10 +27,11 @@
   <!-- ▲ End Google Tag Manager (HEAD部) ▲ -->
 
   <style>
+    /* ボタンを並べやすくするための簡易CSS */
     .consent-group {
       border: 1px solid #ccc;
-      padding: 1em;
       margin: 1em 0;
+      padding: 1em;
       display: inline-block;
     }
     .consent-group h2 {
@@ -39,6 +39,7 @@
     }
     button {
       margin-right: 1em;
+      margin-bottom: 0.5em;
     }
   </style>
 </head>
@@ -46,73 +47,87 @@
   <!-- ▼ Google Tag Manager (noscript) ▼ -->
   <noscript>
     <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8J5HDXW"
-            height="0" width="0"
-            style="display:none;visibility:hidden"></iframe>
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
   </noscript>
   <!-- ▲ End Google Tag Manager (noscript) ▲ -->
 
-  <h1>Google 同意モード テストページ（複数種別・汎用版）</h1>
-  <p>下のリストに含まれる主な同意モード種別をそれぞれ「同意する／拒否する」で切り替えできます。</p>
+  <h1>Google 同意モード テストページ（複数種別 + カスタムキー）</h1>
+  <p>各種別ごとに「同意する」「拒否する」ボタンで値を切り替えます。</p>
 
-  <!-- 動的に生成したボタンを挿入するコンテナ -->
-  <div id="consentList"></div>
+  <!-- Analytics Storage -->
+  <div class="consent-group">
+    <h2>Analytics Storage</h2>
+    <button id="analyticsAccept">同意する</button>
+    <button id="analyticsReject">拒否する</button>
+  </div>
+
+  <!-- Ad Storage -->
+  <div class="consent-group">
+    <h2>Ad Storage</h2>
+    <button id="adAccept">同意する</button>
+    <button id="adReject">拒否する</button>
+  </div>
+
+  <!-- Ad User Data (カスタムキー) -->
+  <div class="consent-group">
+    <h2>Ad User Data (Custom)</h2>
+    <button id="adUserAccept">同意する</button>
+    <button id="adUserReject">拒否する</button>
+  </div>
+
+  <!-- Ad Personalization (カスタムキー) -->
+  <div class="consent-group">
+    <h2>Ad Personalization (Custom)</h2>
+    <button id="adPersAccept">同意する</button>
+    <button id="adPersReject">拒否する</button>
+  </div>
+
+  <!-- Functionality Storage -->
+  <div class="consent-group">
+    <h2>Functionality Storage</h2>
+    <button id="funcAccept">同意する</button>
+    <button id="funcReject">拒否する</button>
+  </div>
+
+  <!-- Personalization Storage -->
+  <div class="consent-group">
+    <h2>Personalization Storage</h2>
+    <button id="persAccept">同意する</button>
+    <button id="persReject">拒否する</button>
+  </div>
+
+  <!-- Security Storage -->
+  <div class="consent-group">
+    <h2>Security Storage</h2>
+    <button id="secAccept">同意する</button>
+    <button id="secReject">拒否する</button>
+  </div>
 
   <script>
-    // 同意モードの主な種別をまとめて管理
-    const CONSENT_TYPES = [
-      { key: 'analytics_storage',       label: 'Analytics Storage' },
-      { key: 'ad_storage',             label: 'Ad Storage' },
-      { key: 'functionality_storage',  label: 'Functionality Storage' },
-      { key: 'personalization_storage',label: 'Personalization Storage' },
-      { key: 'security_storage',       label: 'Security Storage' },
-      { key: 'ad_user_data',           label: 'Ad User Data' },
-      { key: 'ad_personalization',     label: 'Ad Personalization' }
-    ];
+    // ======================
+    // Analytics Storage
+    // ======================
+    document.getElementById('analyticsAccept').addEventListener('click', () => {
+      gtag('consent', 'update', {'analytics_storage': 'granted'});
+      console.log('[Consent Mode] analytics_storage = granted');
+    });
+    document.getElementById('analyticsReject').addEventListener('click', () => {
+      gtag('consent', 'update', {'analytics_storage': 'denied'});
+      console.log('[Consent Mode] analytics_storage = denied');
+    });
 
-    // ページ読み込み後にUIを組み立てる
-    (function buildConsentUI() {
-      const container = document.getElementById('consentList');
+    // ======================
+    // Ad Storage
+    // ======================
+    document.getElementById('adAccept').addEventListener('click', () => {
+      gtag('consent', 'update', {'ad_storage': 'granted'});
+      console.log('[Consent Mode] ad_storage = granted');
+    });
+    document.getElementById('adReject').addEventListener('click', () => {
+      gtag('consent', 'update', {'ad_storage': 'denied'});
+      console.log('[Consent Mode] ad_storage = denied');
+    });
 
-      CONSENT_TYPES.forEach(ct => {
-        // 種別ごとに表示用ブロックを生成
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'consent-group';
-
-        // タイトル
-        const heading = document.createElement('h2');
-        heading.textContent = ct.label;
-        groupDiv.appendChild(heading);
-
-        // 「同意する」ボタン
-        const acceptBtn = document.createElement('button');
-        acceptBtn.textContent = '同意する';
-        // クリック時処理
-        acceptBtn.addEventListener('click', () => {
-          const updateObj = {};
-          updateObj[ct.key] = 'granted';   // 同意を与える
-          gtag('consent', 'update', updateObj);
-          console.log(`[Consent Mode] ${ct.key} = granted`);
-        });
-
-        // 「拒否する」ボタン
-        const rejectBtn = document.createElement('button');
-        rejectBtn.textContent = '拒否する';
-        // クリック時処理
-        rejectBtn.addEventListener('click', () => {
-          const updateObj = {};
-          updateObj[ct.key] = 'denied';    // 同意を拒否
-          gtag('consent', 'update', updateObj);
-          console.log(`[Consent Mode] ${ct.key} = denied`);
-        });
-
-        // ボタンをDOMに追加
-        groupDiv.appendChild(acceptBtn);
-        groupDiv.appendChild(rejectBtn);
-
-        // コンテナに追加
-        container.appendChild(groupDiv);
-      });
-    })();
-  </script>
-</body>
-</html>
+    // ======================
+    // Ad User Data (Custom Key)
+    // ===================
