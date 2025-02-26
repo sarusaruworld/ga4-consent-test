@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>同意モードテスト（初期値：拒否）</title>
+
+  <!-- ▼ ブリッジ用のスクリプトを先に定義 ▼ -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+  </script>
+
+  <!-- ▼ Google Tag Manager (HEAD部) ▼ -->
+  <script>
+    (function(w,d,s,l,i){
+      w[l]=w[l]||[];
+      w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;
+      j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W8J5HDXW');
+  </script>
+  <!-- ▲ End Google Tag Manager (HEAD部) ▲ -->
+
+  <style>
+    .consent-group {
+      border: 1px solid #ccc;
+      margin: 1em 0;
+      padding: 1em;
+      display: inline-block;
+    }
+    .consent-group h2 {
+      margin-top: 0;
+    }
+    button {
+      margin-right: 1em;
+    }
+  </style>
+</head>
+<body>
+  <!-- ▼ Google Tag Manager (noscript) ▼ -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8J5HDXW"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- ▲ End Google Tag Manager (noscript) ▲ -->
+
+  <h1>Google 同意モード テストページ（初期値：拒否）</h1>
+  <p>初回アクセス時、すべての種別が拒否状態（denied）で始まります。</p>
+
+  <!-- Analytics Storage -->
+  <div class="consent-group">
+    <h2>Analytics Storage</h2>
+    <button id="analyticsAccept">同意する</button>
+    <button id="analyticsReject">拒否する</button>
+    <p id="analytics_storageStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- Ad Storage -->
+  <div class="consent-group">
+    <h2>Ad Storage</h2>
+    <button id="adAccept">同意する</button>
+    <button id="adReject">拒否する</button>
+    <p id="ad_storageStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- Functionality Storage -->
+  <div class="consent-group">
+    <h2>Functionality Storage</h2>
+    <button id="funcAccept">同意する</button>
+    <button id="funcReject">拒否する</button>
+    <p id="functionality_storageStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- Personalization Storage -->
+  <div class="consent-group">
+    <h2>Personalization Storage</h2>
+    <button id="persAccept">同意する</button>
+    <button id="persReject">拒否する</button>
+    <p id="personalization_storageStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- Security Storage -->
+  <div class="consent-group">
+    <h2>Security Storage</h2>
+    <button id="secAccept">同意する</button>
+    <button id="secReject">拒否する</button>
+    <p id="security_storageStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- ad_user_data -->
+  <div class="consent-group">
+    <h2>ad_user_data</h2>
+    <button id="adUserDataAccept">同意する</button>
+    <button id="adUserDataReject">拒否する</button>
+    <p id="ad_user_dataStatus">現在の設定: 未設定</p>
+  </div>
+
+  <!-- ad_personalization -->
+  <div class="consent-group">
+    <h2>ad_personalization</h2>
+    <button id="adPersAccept">同意する</button>
+    <button id="adPersReject">拒否する</button>
+    <p id="ad_personalizationStatus">現在の設定: 未設定</p>
+  </div>
+
+  <script>
+    // 同意キーのリスト
+    const CONSENT_KEYS = [
+      'analytics_storage',
+      'ad_storage',
+      'functionality_storage',
+      'personalization_storage',
+      'security_storage',
+      'ad_user_data',
+      'ad_personalization'
+    ];
+
+    // localStorageから読み込む
+    function loadConsentFromStorage() {
+      const stored = localStorage.getItem('consentPrefs');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.warn('Failed to parse consentPrefs:', e);
+        }
+      }
+      return {}; // 空オブジェクト
+    }
+
+    // localStorageへ保存する
+    function saveConsentToStorage(consentObj) {
+      localStorage.setItem('consentPrefs', JSON.stringify(consentObj));
+    }
+
+    // UIを更新する
+    function updateStatusUI(key, value) {
+      const statusElm = document.getElementById(key + 'Status');
+      if (statusElm) {
+        statusElm.textContent = `現在の設定: ${value}`;
+      }
+    }
+
+    // 複数のキーをまとめてUI更新
+    function updateAllUI(consentObj) {
+      CONSENT_KEYS.forEach(key => {
+        const val = consentObj[key] || '未設定';
+        updateStatusUI(key, val);
+      });
+    }
+
+    // 同意をセットする関数
+    function setConsent(key, value) {
+      const consentData = loadConsentFromStorage();
+      consentData[key] = value;
+      saveConsentToStorage(consentData);
+      gtag('consent', 'update', { [key]: value });
+      updateStatusUI(key, value);
+      console.log(`[Consent Mode] ${key} = ${value}`);
+    }
+
+    // ========== ページ読み込み時の処理 ==========
+    window.addEventListener('DOMContentLoaded', () => {
+      let consentData = loadConsentFromStorage();
+
+      // もし localStorage が空だったら、すべて "denied" に設定
+      if (Object.keys(consentData).length === 0) {
+        // デフォルトオブジェクトを作成
+        consentData = {};
+        CONSENT_KEYS.forEach(key => {
+          consentData[key] = 'denied';
+        });
+        // localStorageに保存
+        saveConsentToStorage(consentData);
+
+        // Consent Modeをまとめて更新
+        // 例: { analytics_storage: 'denied', ad_storage: 'denied', ... } を一括で反映
+        gtag('consent', 'update', consentData);
+
+        console.log('[Consent Mode] 初期化: すべて denied に設定しました。', consentData);
+      } else {
+        // 既に何かしらの同意状態がある場合 → それを反映
+        gtag('consent', 'update', consentData);
+        console.log('[Consent Mode] Loaded from localStorage:', consentData);
+      }
+
+      // UI更新
+      updateAllUI(consentData);
+    });
+
+    // ========== イベントリスナー登録 (個別ボタン) ==========
+    document.getElementById('analyticsAccept').addEventListener('click', () => {
+      setConsent('analytics_storage', 'granted');
+    });
+    document.getElementById('analyticsReject').addEventListener('click', () => {
+      setConsent('analytics_storage', 'denied');
+    });
+
+    document.getElementById('adAccept').addEventListener('click', () => {
+      setConsent('ad_storage', 'granted');
+    });
+    document.getElementById('adReject').addEventListener('click', () => {
+      setConsent('ad_storage', 'denied');
+    });
+
+    document.getElementById('funcAccept').addEventListener('click', () => {
+      setConsent('functionality_storage', 'granted');
+    });
+    document.getElementById('funcReject').addEventListener('click', () => {
+      setConsent('functionality_storage', 'denied');
+    });
+
+    document.getElementById('persAccept').addEventListener('click', () => {
+      setConsent('personalization_storage', 'granted');
+    });
+    document.getElementById('persReject').addEventListener('click', () => {
+      setConsent('personalization_storage', 'denied');
+    });
+
+    document.getElementById('secAccept').addEventListener('click', () => {
+      setConsent('security_storage', 'granted');
+    });
+    document.getElementById('secReject').addEventListener('click', () => {
+      setConsent('security_storage', 'denied');
+    });
+
+    document.getElementById('adUserDataAccept').addEventListener('click', () => {
+      setConsent('ad_user_data', 'granted');
+    });
+    document.getElementById('adUserDataReject').addEventListener('click', () => {
+      setConsent('ad_user_data', 'denied');
+    });
+
+    document.getElementById('adPersAccept').addEventListener('click', () => {
+      setConsent('ad_personalization', 'granted');
+    });
+    document.getElementById('adPersReject').addEventListener('click', () => {
+      setConsent('ad_personalization', 'denied');
+    });
+  </script>
+
+<div>
+<a href="next.html">next</a>
+</div>
+  
+</body>
+</html>
